@@ -31,17 +31,16 @@ taken on each of the tasks above -->
 ### Code Structure
 <!-- List source files and code along with a brief account of how it works -->
 
-## Challenges and Observations
-### Observations
-<!-- Explain any observations that are interesting or surprising -->
+## Afterthoughts
 ### Challenges
 <!-- document any difficulties that you
 met while doing any of the tasks -->
-
-## Conclusion and Reflection
+### Observations
+<!-- Explain any observations that are interesting or surprising -->
 ### Reflection
 <!-- what would we do differently?
 what are the problems with the project? -->
-### Conclusion
+
+## Conclusion
 
 
