@@ -12,7 +12,7 @@ The aim of this project is to gain an understanding of how computer networks can
 verify document authenticy through the development of a simple application. While
 developing this application we will also learn how certificates and signatures
 work and apply this information in a practical setting. As the project is to be
-carries out in pairs we also aim to become more effective in collaboration and
+carried out in pairs we also aim to become more effective in collaboration and
 working as part of a team, a skill that will be crucial post university.
 ### Objectives
 <!-- Things needed to achieve aims -->
