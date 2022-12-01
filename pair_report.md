@@ -12,6 +12,8 @@ each task) -->
 <!-- Things needed to achieve aims -->
 
 <!-- what is our solution? -->
+### Requirments
+<!-- What functions do we need the program to do? -->
 
 ## Application
 <!-- what your pair did and what you produced -->
