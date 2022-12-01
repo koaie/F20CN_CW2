@@ -1,5 +1,5 @@
 # F20CN Pair Report
-Authored by Oli Radlett () and Kate Levi (H00347035)
+Authored by Oli Radlett (H00322454) and Kate Levi (H00347035)
 
 <!-- why are we doing this? -->
 
@@ -8,6 +8,12 @@ Authored by Oli Radlett () and Kate Levi (H00347035)
 ### Aims
 <!-- discussing what you expect to learn from the assignment in general (and for
 each task) -->
+The aim of this project is to gain an understanding of how computer networks can
+verify document authenticy through the development of a simple application. While
+developing this application we will also learn how certificates and signatures
+work and apply this information in a practical setting. As the project is to be
+carries out in pairs we also aim to become more effective in collaboration and
+working as part of a team, a skill that will be crucial post university.
 ### Objectives
 <!-- Things needed to achieve aims -->
 
