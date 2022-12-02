@@ -1,3 +1,4 @@
 .fleet
 .vscode
 __pycache__
+*.key
