@@ -29,11 +29,11 @@ class Server:
                     self.pgp.list()
                     private = pickle.dumps(self.pgp.list_public_keys())
                     public = pickle.dumps(self.pgp.list_private_keys())
-                    # self.conn.send("list private %s public %s".encode() %(private, public))
-                    text = "helloo"
-                    self.conn.send(text.encode())
+                    # Not convinced with the encoding, we'll need to test
+                    self.conn.send("list private %s public %s".encode() %(private, public))
                 if data[:4] == "sign":
-                    self.pgp.sign()
+                    cert = pickle.
+                    self.pgp.sign(cert)
                 if data[:6] == "verify":
                     self.pgp.verify()
                 if data[:3] == "add":

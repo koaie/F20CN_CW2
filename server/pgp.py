@@ -24,6 +24,7 @@ class PGP:
         return gpg
 
     def sign(self, cert):
+        # Need to work out how we manage what key is used to sign the cert
         response = self.gpg.sign(cert)
         print(response)
         return response
