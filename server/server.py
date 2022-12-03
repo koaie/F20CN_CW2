@@ -20,14 +20,18 @@ class Server:
         self.s.listen(5)
         while True:
             (self.conn, self.address) = self.s.accept()
+            print(str(self.address) + " connected.")
             data = self.conn.recv(1024)
             if data:
                 data = data.decode()
+                print(data)
                 if data[:4] == "list":
                     self.pgp.list()
                     private = pickle.dumps(self.pgp.list_public_keys())
                     public = pickle.dumps(self.pgp.list_private_keys())
-                    self.conn.send("list private %s public %s".encode() %(private, public))
+                    # self.conn.send("list private %s public %s".encode() %(private, public))
+                    text = "helloo"
+                    self.conn.send(text.encode())
                 if data[:4] == "sign":
                     self.pgp.sign()
                 if data[:6] == "verify":
@@ -38,19 +42,3 @@ class Server:
                 print("Unexpected command %s" % data)
 
             time.sleep(1)
-
-class Send:
-    def __init__(self, s: socket):
-        self.s = s
-
-    def text(self, text: str):
-        self.s.send(text.encode())
-
-# class Listen:
-#     def __init__(self,s: socket):
-#         self.s = s
-
-#     def text(self):
-#         data = self.s.recv(1024)
-#         if data:
-#             return data.decode()

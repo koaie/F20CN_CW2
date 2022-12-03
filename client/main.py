@@ -2,9 +2,9 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 import client
+import asyncio
 
-client = client.client("127.0.0.1",8888)
-client.connect()
+
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -71,7 +71,13 @@ class App(customtkinter.CTk):
         client.send(input)
         self.entry.delete(0,len(input))
 
+app = App()
+client = client.client("127.0.0.1",8888)
+client.connect()
+
+async def run():
+    asyncio.create_task(client.start())
+    asyncio.create_task(app.mainloop())
 
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    asyncio.run(run())
