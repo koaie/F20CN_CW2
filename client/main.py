@@ -69,6 +69,7 @@ class App(customtkinter.CTk):
     def send_click(self):
         input = self.entry.get()
         client.send(input)
+        client.send("print print test")
         self.entry.delete(0,len(input))
 
 app = App()

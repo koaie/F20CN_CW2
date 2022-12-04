@@ -17,5 +17,7 @@ class client:
         while True:
             data = self.s.recv(1024)
             if data:
-                print("data %s" % data.decode)
+                s = "print data %s" % data.decode
+                print("sending print command")
+                self.send("print hello")
             time.sleep(1)

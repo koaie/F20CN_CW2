@@ -24,7 +24,6 @@ class Server:
             data = self.conn.recv(1024)
             if data:
                 data = data.decode()
-                print(data)
                 if data[:4] == "list":
                     self.pgp.list()
                     private = pickle.dumps(self.pgp.list_public_keys())
@@ -32,12 +31,15 @@ class Server:
                     # Not convinced with the encoding, we'll need to test
                     self.conn.send("list private %s public %s".encode() %(private, public))
                 if data[:4] == "sign":
-                    cert = pickle.
+                    cert = "pickle."
                     self.pgp.sign(cert)
                 if data[:6] == "verify":
                     self.pgp.verify()
                 if data[:3] == "add":
                     self.pgp.add_key(data[4:])
+                if data[:5] == "print":
+                    print("test")
+                    print(data[6:])
             else:
                 print("Unexpected command %s" % data)
 
