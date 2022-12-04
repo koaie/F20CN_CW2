@@ -29,7 +29,9 @@ class Server:
                     private = pickle.dumps(self.pgp.list_public_keys())
                     public = pickle.dumps(self.pgp.list_private_keys())
                     # Not convinced with the encoding, we'll need to test
-                    self.conn.send("list private %s public %s".encode() %(private, public))
+                    # self.conn.send("list private %s public %s".encode() %(private, public))
+                    text = "daddy"
+                    self.conn.send(text.encode())
                 if data[:4] == "sign":
                     cert = "pickle."
                     self.pgp.sign(cert)

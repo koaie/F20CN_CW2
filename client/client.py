@@ -13,11 +13,6 @@ class client:
     def send(self,text:str):
         self.s.send(text.encode())
 
-    async def start(self):
-        while True:
-            data = self.s.recv(1024)
-            if data:
-                s = "print data %s" % data.decode
-                print("sending print command")
-                self.send("print hello")
-            time.sleep(1)
+        data = self.s.recv(1024)
+        if data:
+            print(data)

@@ -2,9 +2,10 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 import client
-import asyncio
+from multiprocessing import Process
 
-
+client = client.client("127.0.0.1",8888)
+client.connect()
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -69,16 +70,9 @@ class App(customtkinter.CTk):
     def send_click(self):
         input = self.entry.get()
         client.send(input)
-        client.send("print print test")
         self.entry.delete(0,len(input))
 
-app = App()
-client = client.client("127.0.0.1",8888)
-client.connect()
-
-async def run():
-    asyncio.create_task(client.start())
-    asyncio.create_task(app.mainloop())
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    app = App()
+    app.mainloop()
