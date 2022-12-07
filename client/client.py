@@ -1,6 +1,7 @@
 import socket
 import pickle
 import base64
+import time
 
 class client:
     s = socket.socket()

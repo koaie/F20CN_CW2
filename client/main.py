@@ -89,8 +89,5 @@ class App(customtkinter.CTk):
         self.entry.delete(0, len(input))
 
 if __name__ == "__main__":
-    # client.send("test")
-    # time.sleep(1)
-    # client.send("test")
     app = App()
     app.mainloop()
