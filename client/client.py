@@ -1,9 +1,11 @@
 import socket
 import pickle
 import base64
+
 class client:
     s = socket.socket()
-    def __init__(self,ip:str,port:int):
+
+    def __init__(self, ip: str, port: int):
         # Init socket params
         self.ip = ip
         self.port = port
@@ -31,7 +33,7 @@ class client:
         return keys
 
     def list(self, private, public):
-        print("Recieved %d private keys and %d public keys from the server" % (len(private), len(public)))
+        print("Received %d private keys and %d public keys from the server" % (len(private), len(public)))
 
     def send(self,text:str):
         self.s.send(text.encode())
