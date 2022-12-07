@@ -25,6 +25,7 @@ class Server:
             data = self.conn.recv(1024)
             if data:
                 data = data.decode()
+                # This could do with a parsing function
                 if data[:4] == "list":
                     self.pgp.list()
                     private = pickle.dumps(self.pgp.list_public_keys())
@@ -39,10 +40,14 @@ class Server:
                     self.pgp.sign(cert)
                 elif data[:6] == "verify":
                     self.pgp.verify()
-                elif data[:3] == "add":
-                    self.pgp.add_key(data[4:])
-                else:
-                    error = "unexpected command"
-                    print("%s %s" % (error, data))
-                    self.conn.send(error.encode())
+                if data[:3] == "add":
+                    keys_start = data.find("startkeys") + len("endkeys") + 1
+                    keys_end = data.find("endkeys")
+                    keys__string = data[keys_start:keys_end]
+                    keys = pickle.loads(base64.b64decode(keys__string))
+                    self.pgp.add_key(keys)
+            else:
+                print("Unexpected command %s" % data)
+                self.conn.send("unexpected command")
+
             time.sleep(1)
