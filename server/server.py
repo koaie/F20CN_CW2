@@ -34,15 +34,15 @@ class Server:
                     print(private)
                     packet = "list private %s endprivate public %s endpublic" % (private, public)
                     self.conn.send(packet.encode())
-                if data[:4] == "sign":
+                elif data[:4] == "sign":
                     cert = "pickle."
                     self.pgp.sign(cert)
-                if data[:6] == "verify":
+                elif data[:6] == "verify":
                     self.pgp.verify()
-                if data[:3] == "add":
+                elif data[:3] == "add":
                     self.pgp.add_key(data[4:])
-            else:
-                print("Unexpected command %s" % data)
-                self.conn.send("unexpected command")
-
+                else:
+                    error = "unexpected command"
+                    print("%s %s" % (error, data))
+                    self.conn.send(error.encode())
             time.sleep(1)
