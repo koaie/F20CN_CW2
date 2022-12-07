@@ -1,11 +1,16 @@
 import tkinter
-import tkinter.messagebox
+from tkinter.messagebox import showerror
 import customtkinter
+import sys
 import client
 from multiprocessing import Process
 
-client = client.client("127.0.0.1",8888)
-client.connect()
+try:
+    client = client.client("127.0.0.1", 8888)
+    client.connect()
+except ConnectionError:
+    showerror(title="Connection error", message="Cannot connect to server. Check it is still running")
+    sys.exit("Connection error")
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -15,7 +20,7 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
         # configure window
-        self.title("CustomTkinter complex_example.py")
+        self.title("F20CN CW2 client application")
         self.geometry(f"{1100}x{580}")
 
         # configure grid layout (4x4)
@@ -70,7 +75,7 @@ class App(customtkinter.CTk):
     def send_click(self):
         input = self.entry.get()
         client.send(input)
-        self.entry.delete(0,len(input))
+        self.entry.delete(0, len(input))
 
 
 if __name__ == "__main__":
