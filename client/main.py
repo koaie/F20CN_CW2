@@ -1,5 +1,7 @@
 import tkinter
 from tkinter.messagebox import showerror
+from tkinter import filedialog
+import os
 import customtkinter
 import sys
 import client
@@ -34,7 +36,7 @@ class App(customtkinter.CTk):
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="CustomTkinter", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.add_keys)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
@@ -61,6 +63,15 @@ class App(customtkinter.CTk):
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
         print("CTkInputDialog:", dialog.get_input())
+
+    def add_keys(self):
+        initial = os.path.dirname(os.path.realpath(__file__))
+        keys = filedialog.askopenfilename(
+            title="Open dataset",
+            initialdir=initial,
+            filetypes=[("Public/Private keys", "*.key")])
+        if keys:
+            client.add_keys(keys)
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)

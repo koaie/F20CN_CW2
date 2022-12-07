@@ -41,7 +41,8 @@ class Server:
                 elif data[:6] == "verify":
                     self.pgp.verify()
                 if data[:3] == "add":
-                    keys_start = data.find("startkeys") + len("endkeys") + 1
+                    self.conn.send("OK".encode())
+                    keys_start = data.find("startkeys") + len("startkeys") + 1
                     keys_end = data.find("endkeys")
                     keys__string = data[keys_start:keys_end]
                     keys = pickle.loads(base64.b64decode(keys__string))
