@@ -3,7 +3,7 @@ from tkinter.messagebox import showerror
 import customtkinter
 import sys
 import client
-from multiprocessing import Process
+import time
 
 try:
     client = client.client("127.0.0.1", 8888)
@@ -77,7 +77,9 @@ class App(customtkinter.CTk):
         client.send(input)
         self.entry.delete(0, len(input))
 
-
 if __name__ == "__main__":
+    # client.send("test")
+    # time.sleep(1)
+    # client.send("test")
     app = App()
     app.mainloop()
