@@ -41,7 +41,12 @@ class Server:
                             elif data[:6] == "verify":
                                 self.pgp.verify()
                             elif data[:3] == "add":
-                                self.pgp.add_key(data[4:])
+                                conn.send("OK".encode())
+                                keys_start = data.find("startkeys") + len("startkeys") + 1
+                                keys_end = data.find("endkeys")
+                                keys__string = data[keys_start:keys_end]
+                                keys = pickle.loads(base64.b64decode(keys__string))
+                                self.pgp.add_key(keys)
                             else:
                                 error = "unexpected command"
                                 print("%s %s" % (error, data))

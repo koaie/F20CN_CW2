@@ -39,6 +39,7 @@ class PGP:
         public = self.gpg.list_keys()
         private = self.gpg.list_keys(True)
         numKeys = len(public) + len(private)
+
         print("|----------------------------|")
         print("| Keys: %d                    |" % numKeys)
         print("|----------------------------|")
@@ -60,4 +61,4 @@ class PGP:
         #self.gpg.import_keys_file(os.path.dirname(os.path.realpath(__file__)) + "/public_key.key")
         #self.gpg.import_keys_file(os.path.dirname(os.path.realpath(__file__)) + "/private_key.key")
         result = self.gpg.import_keys(data)
-        print("%s key(s) imported" %result.count)
+        print("%s key(s) imported" % result.count)

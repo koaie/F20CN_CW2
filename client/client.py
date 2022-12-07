@@ -32,6 +32,12 @@ class client:
         }
         return keys
 
+    def add_keys(self, keys):
+        keys = pickle.dumps(keys)
+        keys = base64.b64encode(keys).decode('ascii')
+        packet = "add startkeys %s endkeys" % keys
+        self.send(packet)
+
     def list(self, private, public):
         print("Received %d private keys and %d public keys from the server" % (len(private), len(public)))
 
