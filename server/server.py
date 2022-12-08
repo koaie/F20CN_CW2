@@ -24,6 +24,27 @@ class Server:
         print('Connected by', addr)
         return conn, addr
 
+    def listKeys(self):
+        private = pickle.dumps(self.pgp.list_public_keys())
+        public = pickle.dumps(self.pgp.list_private_keys())
+        private = base64.b64encode(private).decode('ascii')
+        public = base64.b64encode(public).decode('ascii')
+        print(private)
+        packet = "list private %s endprivate public %s endpublic" % (private, public)
+        return packet
+
+    def addKeys(self, data):
+        try:
+            keys_start = data.find("startkeys") + len("startkeys") + 1
+            keys_end = data.find("endkeys")
+            keys__string = data[keys_start:keys_end]
+            keys = pickle.loads(base64.b64decode(keys__string))
+            self.pgp.add_key(keys)
+            return "OK"
+        except EOFError:
+            return "Incorrect input"
+
+
     def connection(self, conn: socket, addr):
         while True:
             data = conn.recv(1024)
@@ -31,12 +52,7 @@ class Server:
                 data = data.decode()
                 if data[:4] == "list":
                     self.pgp.list()
-                    private = pickle.dumps(self.pgp.list_public_keys())
-                    public = pickle.dumps(self.pgp.list_private_keys())
-                    private = base64.b64encode(private).decode('ascii')
-                    public = base64.b64encode(public).decode('ascii')
-                    print(private)
-                    packet = "list private %s endprivate public %s endpublic" % (private, public)
+                    packet = self.listKeys()
                     conn.send(packet.encode())
                 elif data[:4] == "sign":
                     cert = "pickle."
@@ -44,15 +60,8 @@ class Server:
                 elif data[:6] == "verify":
                     self.pgp.verify()
                 elif data[:3] == "add":
-                    try:
-                        keys_start = data.find("startkeys") + len("startkeys") + 1
-                        keys_end = data.find("endkeys")
-                        keys__string = data[keys_start:keys_end]
-                        keys = pickle.loads(base64.b64decode(keys__string))
-                        self.pgp.add_key(keys)
-                        conn.send("OK".encode())
-                    except EOFError:
-                        conn.send("Incorrect input".encode())
+                    res = self.addKeys(data)
+                    conn.send(res.encode())
                 else:
                     error = "unexpected command"
                     print("%s %s" % (error, data))
