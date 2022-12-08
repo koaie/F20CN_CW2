@@ -17,10 +17,16 @@ class Server:
         print("starting server on port " + str(port))
         self.pgp = PGP()
 
+    def listen(self):
+        self.s.listen(1)
+
     def accept(self):
         conn, addr = self.s.accept()
+        print('Connected by', addr)
+        return conn, addr
+
+    def connection(self, conn: socket, addr):
         with conn:
-            print('Connected by', addr)
             while True:
                 data = conn.recv(1024)
                 if data:
@@ -57,10 +63,4 @@ class Server:
                     print("Client quit, closing", addr)
                     conn.close()
                     break
-            time.sleep(1)
-
-    def start(self):
-        self.s.listen(1)
-        while True:
-            self.accept()
             time.sleep(1)
