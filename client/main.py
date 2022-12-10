@@ -48,17 +48,20 @@ class App(customtkinter.CTk):
         print("CTkInputDialog:", dialog.get_input())
 
     def add_keys(self):
-        initial = os.path.dirname(os.path.realpath(__file__))
-        key = filedialog.askopenfilename(
-            title="Open dataset",
-            initialdir=initial,
-            filetypes=[("Public/Private keys", "*.asc")])
-        if key:
-            # need try catch
-            key_file = open(key, "r")
-            key_string = key_file.read()
-            key_file.close()
-            client.add_keys(key_string)
+        try:
+            initial = os.path.dirname(os.path.realpath(__file__))
+            key = filedialog.askopenfilename(
+                title="Open dataset",
+                initialdir=initial,
+                filetypes=[("Public/Private keys", "*.asc")])
+            if key:
+                # need try catch
+                key_file = open(key, "r")
+                key_string = key_file.read()
+                key_file.close()
+                client.add_keys(key_string)
+        except UnicodeDecodeError:
+            print("Incorrect file - ensure exported with --armor")
 
     def load_keys(self):
         client.send("list")
