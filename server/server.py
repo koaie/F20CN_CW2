@@ -35,12 +35,12 @@ class Server:
 
     def addKeys(self, data):
         try:
-            if data.find("PUBLIC"):
+            if "PUBLIC" in data:
                 key_start = data.find("-----BEGIN PGP PUBLIC KEY BLOCK-----")
                 key_end = data.find("-----END PGP PUBLIC KEY BLOCK-----") + len("-----END PGP PUBLIC KEY BLOCK-----")
                 key_string = data[key_start:key_end]
                 self.pgp.add_key(key_string)
-            elif data.find("PRIVATE"):
+            elif "PRIVATE" in data:
                 key_start = data.find("-----BEGIN PGP PRIVATE KEY BLOCK-----")
                 key_end = data.find("-----END PGP PRIVATE KEY BLOCK-----") + len("-----END PGP PRIVATE KEY BLOCK-----")
                 key_string = data[key_start:key_end]

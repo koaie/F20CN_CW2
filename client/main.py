@@ -68,7 +68,6 @@ class App(customtkinter.CTk):
             key_file = open(key, "r")
             key_string = key_file.read()
             key_file.close()
-            print(key_string)
             client.add_keys(key_string)
 
     def sidebar_button_event(self):
