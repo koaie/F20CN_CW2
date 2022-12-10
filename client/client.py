@@ -16,8 +16,6 @@ class client:
 
     def connect(self):
         self.s.connect((self.ip, self.port))
-        # We love race conditions
-        self.send("list")
 
     def disconnect(self):
         self.s.close()

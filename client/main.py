@@ -52,7 +52,7 @@ class App(customtkinter.CTk):
         key = filedialog.askopenfilename(
             title="Open dataset",
             initialdir=initial,
-            filetypes=[("Public/Private keys", "*.key")])
+            filetypes=[("Public/Private keys", "*.asc")])
         if key:
             # need try catch
             key_file = open(key, "r")
@@ -61,6 +61,7 @@ class App(customtkinter.CTk):
             client.add_keys(key_string)
 
     def load_keys(self):
+        client.send("list")
         private, public = client.get_keys()
         self.keys_box.delete("0.0", "end")
         text = "Private keys:\n"
