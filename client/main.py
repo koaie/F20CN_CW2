@@ -38,14 +38,16 @@ class App(customtkinter.CTk):
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         self.send_key_button = customtkinter.CTkButton(self.sidebar_frame, text="Send key", command=self.add_keys)
         self.send_key_button.grid(row=1, column=0, padx=20, pady=10)
+        self.command_button = customtkinter.CTkButton(self.sidebar_frame, text="Send Command", command=self.command_dialog)
+        self.command_button.grid(row=2, column=0, padx=20, pady=10)
         self.keys_box = customtkinter.CTkTextbox(self)
         self.keys_box.configure(state="disabled")
         self.keys_box.grid(row=0, column=1, columnspan=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.load_keys()
 
-    def open_input_dialog_event(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog:", dialog.get_input())
+    def command_dialog(self):
+        dialog = customtkinter.CTkInputDialog(text="Type in a command:", title="CTkInputDialog")
+        client.send(dialog.get_input())
 
     def add_keys(self):
         try:
@@ -82,10 +84,6 @@ class App(customtkinter.CTk):
     def sidebar_button_event(self):
         print("sidebar_button click")
 
-    def send_click(self):
-        input = self.entry.get()
-        client.send(input)
-        self.entry.delete(0, len(input))
 
 if __name__ == "__main__":
     app = App()
