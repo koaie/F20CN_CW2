@@ -9,11 +9,15 @@ class client:
 
     def __init__(self, ip: str, port: int):
         # Init socket params
+        self.public = []
+        self.private = []
         self.ip = ip
         self.port = port
 
     def connect(self):
         self.s.connect((self.ip, self.port))
+        # We love race conditions
+        self.send("list")
 
     def disconnect(self):
         self.s.close()
@@ -39,6 +43,11 @@ class client:
 
     def list(self, private, public):
         print("Received %d private keys and %d public keys from the server" % (len(private), len(public)))
+        self.private = private
+        self.public = public
+
+    def get_keys(self):
+        return self.private, self.public
 
     def send(self, text: str):
         self.s.send(text.encode())

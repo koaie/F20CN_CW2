@@ -34,24 +34,14 @@ class App(customtkinter.CTk):
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="CustomTkinter", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="F20CN CW2 Client", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Send keys", command=self.add_keys)
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-
-        # create main entry and button
-        self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
-        self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.keys_box = customtkinter.CTkTextbox(self, state=tkinter.DISABLED)
-        self.keys_box.grid(row=0, column=1, columnspan=2, padx=20, pady=20, sticky="nsew")
-
-        self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", text="Send", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.send_click)
-        self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.send_key_button = customtkinter.CTkButton(self.sidebar_frame, text="Send key", command=self.add_keys)
+        self.send_key_button.grid(row=1, column=0, padx=20, pady=10)
+        self.keys_box = customtkinter.CTkTextbox(self)
+        self.keys_box.configure(state="disabled")
+        self.keys_box.grid(row=0, column=1, columnspan=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.load_keys()
 
     def open_input_dialog_event(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
@@ -69,6 +59,21 @@ class App(customtkinter.CTk):
             key_string = key_file.read()
             key_file.close()
             client.add_keys(key_string)
+
+    def load_keys(self):
+        private, public = client.get_keys()
+        self.keys_box.delete("0.0", "end")
+        text = "Private keys:\n"
+        for key in private:
+            text += key["keyid"] + "\n"
+        text += "\nPublic keys:\n"
+        for key in public:
+            text += key["keyid"] + "\n"
+        # Very cool :(
+        self.keys_box.configure(state="normal")
+        self.keys_box.insert("0.0", text)
+        self.keys_box.configure(state="disabled")
+
 
     def sidebar_button_event(self):
         print("sidebar_button click")

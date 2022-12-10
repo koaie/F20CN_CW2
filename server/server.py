@@ -25,11 +25,10 @@ class Server:
         return conn, addr
 
     def listKeys(self):
-        private = pickle.dumps(self.pgp.list_public_keys())
-        public = pickle.dumps(self.pgp.list_private_keys())
-        private = base64.b64encode(private).decode('ascii')
+        public = pickle.dumps(self.pgp.list_public_keys())
+        private = pickle.dumps(self.pgp.list_private_keys())
         public = base64.b64encode(public).decode('ascii')
-        print(private)
+        private = base64.b64encode(private).decode('ascii')
         packet = "list private %s endprivate public %s endpublic" % (private, public)
         return packet
 
@@ -56,7 +55,7 @@ class Server:
             if data:
                 data = data.decode()
                 if data[:4] == "list":
-                    self.pgp.list()
+                    # self.pgp.list()
                     packet = self.listKeys()
                     conn.send(packet.encode())
                 elif data[:4] == "sign":
