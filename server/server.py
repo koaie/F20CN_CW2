@@ -35,11 +35,16 @@ class Server:
 
     def addKeys(self, data):
         try:
-            keys_start = data.find("startkeys") + len("startkeys") + 1
-            keys_end = data.find("endkeys")
-            keys__string = data[keys_start:keys_end]
-            keys = pickle.loads(base64.b64decode(keys__string))
-            self.pgp.add_key(keys)
+            if data.find("PUBLIC"):
+                key_start = data.find("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+                key_end = data.find("-----END PGP PUBLIC KEY BLOCK-----") + len("-----END PGP PUBLIC KEY BLOCK-----")
+                key_string = data[key_start:key_end]
+                self.pgp.add_key(key_string)
+            elif data.find("PRIVATE"):
+                key_start = data.find("-----BEGIN PGP PRIVATE KEY BLOCK-----")
+                key_end = data.find("-----END PGP PRIVATE KEY BLOCK-----") + len("-----END PGP PRIVATE KEY BLOCK-----")
+                key_string = data[key_start:key_end]
+                self.pgp.add_key(key_string)
             return "OK"
         except EOFError:
             return "Incorrect input"
@@ -47,7 +52,7 @@ class Server:
 
     def connection(self, conn: socket, addr):
         while True:
-            data = conn.recv(1024)
+            data = conn.recv(10000)
             if data:
                 data = data.decode()
                 if data[:4] == "list":

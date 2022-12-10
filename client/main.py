@@ -42,20 +42,13 @@ class App(customtkinter.CTk):
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
-        self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
-        self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
-                                                               command=self.change_scaling_event)
-        self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
         # create main entry and button
         self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
         self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+        self.keys_box = customtkinter.CTkTextbox(self, state=tkinter.DISABLED)
+        self.keys_box.grid(row=0, column=1, columnspan=2, padx=20, pady=20, sticky="nsew")
 
         self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", text="Send", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.send_click)
         self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
@@ -66,19 +59,17 @@ class App(customtkinter.CTk):
 
     def add_keys(self):
         initial = os.path.dirname(os.path.realpath(__file__))
-        keys = filedialog.askopenfilename(
+        key = filedialog.askopenfilename(
             title="Open dataset",
             initialdir=initial,
             filetypes=[("Public/Private keys", "*.key")])
-        if keys:
-            client.add_keys(keys)
-
-    def change_appearance_mode_event(self, new_appearance_mode: str):
-        customtkinter.set_appearance_mode(new_appearance_mode)
-
-    def change_scaling_event(self, new_scaling: str):
-        new_scaling_float = int(new_scaling.replace("%", "")) / 100
-        customtkinter.set_widget_scaling(new_scaling_float)
+        if key:
+            # need try catch
+            key_file = open(key, "r")
+            key_string = key_file.read()
+            key_file.close()
+            print(key_string)
+            client.add_keys(key_string)
 
     def sidebar_button_event(self):
         print("sidebar_button click")
