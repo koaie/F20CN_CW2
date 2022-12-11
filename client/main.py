@@ -1,11 +1,11 @@
 import tkinter
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror, showwarning
 from tkinter import filedialog
 import os
 import customtkinter
 import sys
 import client
-import time
+import datetime
 
 try:
     client = client.client("127.0.0.1", 8888)
@@ -44,8 +44,12 @@ class App(customtkinter.CTk):
         self.command_button.grid(row=3, column=0, padx=20, pady=10)
         self.keys_box = customtkinter.CTkTextbox(self)
         self.keys_box.configure(state="disabled")
-        self.keys_box.grid(row=0, column=1, columnspan=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.keys_box.grid(row=0, column=1, columnspan=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.authors_box = customtkinter.CTkTextbox(self)
+        self.authors_box.configure(state="disabled")
+        self.authors_box.grid(row=0, column=2, columnspan=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.load_keys()
+        self.load_authors()
 
     def command_dialog(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a command:", title="CTkInputDialog")
@@ -61,14 +65,13 @@ class App(customtkinter.CTk):
                 initialdir=initial,
                 filetypes=[("Public/Private keys", "*.asc")])
             if key:
-                # need try catch
                 key_file = open(key, "r")
                 key_string = key_file.read()
                 key_file.close()
                 client.add_keys(key_string)
         except UnicodeDecodeError:
-            print("Incorrect file - ensure exported with --armor")
-
+            showwarning(title="Incorrect key file", message="Incorrect key file specified. Ensure key is exported "
+                                                            "with --armor")
     def load_keys(self):
         client.send("list")
         private, public = client.get_keys()
@@ -76,12 +79,29 @@ class App(customtkinter.CTk):
         self.keys_box.delete("0.0", "end")
         self.keys_box.insert("end", "Private keys:\n", "heading")
         for key in private:
-            self.keys_box.insert("end", key["keyid"] + "\n", "key")
+            if key["expires"]:
+                self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: " +
+                                     str(datetime.datetime.fromtimestamp(int(key["expires"]))) + "\n", "key")
+            else:
+                self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: N/A\n", "key")
         self.keys_box.insert("end", "\nPrivate keys:\n", "heading")
         for key in public:
-            self.keys_box.insert("end", key["keyid"] + "\n", "key")
+            if key["expires"]:
+                self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: " +
+                                     str(datetime.datetime.fromtimestamp(int(key["expires"]))) + "\n", "key")
+            else:
+                self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: N/A\n", "key")
         self.keys_box.tag_config("heading", underline=True)
         self.keys_box.configure(state="disabled")
+
+    def load_authors(self):
+        # client.send("authors")
+        self.authors_box.configure(state="normal")
+        self.authors_box.delete("0.0", "end")
+        self.authors_box.insert("end", "Trusted Authors:\n", "heading")
+        self.authors_box.insert("end", "Example Author\n", "key")
+        self.authors_box.tag_config("heading", underline=True)
+        self.authors_box.configure(state="disabled")
 
 
 if __name__ == "__main__":
