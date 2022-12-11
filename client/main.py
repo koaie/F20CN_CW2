@@ -49,7 +49,9 @@ class App(customtkinter.CTk):
 
     def command_dialog(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a command:", title="CTkInputDialog")
-        client.send(dialog.get_input())
+        input = dialog.get_input()
+        if(input):
+            client.send(input)
 
     def add_keys(self):
         try:
