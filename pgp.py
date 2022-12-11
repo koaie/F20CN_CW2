@@ -5,20 +5,23 @@ import distutils.spawn
 
 
 class PGP:
-    def __init__(self, home=None):
-        if home:
-            self.gpg = self.initiate_gpg(home)
-        else:
+    def __init__(self,path=None, home=None):
+        if home and path:
+            self.gpg = self.initiate_gpg(path,home)
+        elif home:
+            path = os.path.dirname(os.path.realpath(__file__)) + "\\bin\\gpg.exe"
+            self.gpg = self.initiate_gpg(path,home)
+        elif path:
             if os.name == "nt":
                 appdata = os.getenv('APPDATA')
-                self.gpg = self.initiate_gpg(appdata + '/gnupg/')
+                self.gpg = self.initiate_gpg(path,appdata + '/gnupg/')
             else:
-                self.gpg = self.initiate_gpg('~/.gnupg/')
+                self.gpg = self.initiate_gpg(path,'~/.gnupg/')
 
     @staticmethod
-    def initiate_gpg(home: str):
+    def initiate_gpg(path:str, home: str):
         if os.name == "nt":
-            path = os.path.dirname(os.path.realpath(__file__)) + "\\bin\\gpg.exe"
+            path = path + "\\gpg.exe"
             if os.path.exists(path):
                 gpg = gnupg.GPG(gpgbinary=path, gnupghome=home)
             else:

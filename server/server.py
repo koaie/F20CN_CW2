@@ -1,6 +1,11 @@
 import socket
 import pickle
 import base64
+import sys
+import os
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
 from pgp import PGP
 
 
@@ -14,7 +19,8 @@ class Server:
         # Init socket params
         self.s.bind((ip, port))
         print("starting server on port " + str(port))
-        self.pgp = PGP()
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\bin"
+        self.pgp = PGP(path)
 
     def listen(self):
         self.s.listen(1)
