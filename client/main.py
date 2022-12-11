@@ -84,10 +84,6 @@ class App(customtkinter.CTk):
         self.keys_box.configure(state="disabled")
 
 
-    def sidebar_button_event(self):
-        print("sidebar_button click")
-
-
 if __name__ == "__main__":
     app = App()
     app.mainloop()
