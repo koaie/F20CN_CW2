@@ -38,8 +38,10 @@ class App(customtkinter.CTk):
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         self.send_key_button = customtkinter.CTkButton(self.sidebar_frame, text="Send key", command=self.add_keys)
         self.send_key_button.grid(row=1, column=0, padx=20, pady=10)
+        self.list_keys_button = customtkinter.CTkButton(self.sidebar_frame, text="List keys", command=self.load_keys)
+        self.list_keys_button.grid(row=2, column=0, padx=20, pady=10)
         self.command_button = customtkinter.CTkButton(self.sidebar_frame, text="Send Command", command=self.command_dialog)
-        self.command_button.grid(row=2, column=0, padx=20, pady=10)
+        self.command_button.grid(row=3, column=0, padx=20, pady=10)
         self.keys_box = customtkinter.CTkTextbox(self)
         self.keys_box.configure(state="disabled")
         self.keys_box.grid(row=0, column=1, columnspan=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
@@ -68,16 +70,15 @@ class App(customtkinter.CTk):
     def load_keys(self):
         client.send("list")
         private, public = client.get_keys()
-        self.keys_box.delete("0.0", "end")
-        text = "Private keys:\n"
-        for key in private:
-            text += key["keyid"] + "\n"
-        text += "\nPublic keys:\n"
-        for key in public:
-            text += key["keyid"] + "\n"
-        # Very cool :(
         self.keys_box.configure(state="normal")
-        self.keys_box.insert("0.0", text)
+        self.keys_box.delete("0.0", "end")
+        self.keys_box.insert("end", "Private keys:\n", "heading")
+        for key in private:
+            self.keys_box.insert("end", key["keyid"] + "\n", "key")
+        self.keys_box.insert("end", "\nPrivate keys:\n", "heading")
+        for key in public:
+            self.keys_box.insert("end", key["keyid"] + "\n", "key")
+        self.keys_box.tag_config("heading", underline=True)
         self.keys_box.configure(state="disabled")
 
 
