@@ -5,15 +5,22 @@ import distutils.spawn
 
 
 class PGP:
-    def __init__(self):
-        self.gpg = self.initiate_gpg()
+    def __init__(self, home=None):
+        if home:
+            self.gpg = self.initiate_gpg(home)
+        else:
+            if os.name == "nt":
+                appdata = os.getenv('APPDATA')
+                self.gpg = self.initiate_gpg(appdata + '/gnupg/')
+            else:
+                self.gpg = self.initiate_gpg('~/.gnupg/')
 
     @staticmethod
-    def initiate_gpg():
+    def initiate_gpg(home: str):
         if os.name == "nt":
             path = os.path.dirname(os.path.realpath(__file__)) + "\\bin\\gpg.exe"
             if os.path.exists(path):
-                gpg = gnupg.GPG(gpgbinary=path)
+                gpg = gnupg.GPG(gpgbinary=path, gnupghome=home)
             else:
                 sys.exit("Error: gpg windows binary is missing from bin folder")
         else:
