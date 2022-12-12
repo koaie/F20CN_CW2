@@ -6,6 +6,7 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 import sys
 import os
+from tkinter.messagebox import showwarning
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
@@ -89,7 +90,8 @@ class client:
         result = self.verifier.verify(message_hash, data[2])
         if result:
             return data
-
+        else:
+            showwarning("Signature error", "Warning, signature does not match")
     def send(self, text: str):
         self.s.send(text.encode())
         data = self.s.recv(20000)
