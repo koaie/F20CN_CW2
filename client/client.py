@@ -91,21 +91,21 @@ class client:
 
     def send(self, text: str):
         self.s.send(text.encode())
-        data = self.s.recv(20000)
+        data = self.s.recv(10000)
         if data:
             data = data.decode()
-            data = self.verify(data)
+            # data = self.verify(data)
             # Handle unverified
             # command = data[0]
             # message = data[1]
             # signature = data[2]
-            if data[0] == "list":
+            if data[:4] == "list":
                 keys = self.parseKeys(data[1])
                 self.list(keys["private"], keys["public"])
-            elif data[0] == "file":
+            elif data[:4] == "file":
                 # This will need some changing now data is an list
                 data = data.split(" ")
-                if data[0]:
+                if data[1]:
                     path = "C:\\Users\\Koa\\Desktop\\private.asc"
                     self.recvFile(path,data[1])
                 else:
