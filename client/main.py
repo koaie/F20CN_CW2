@@ -167,6 +167,7 @@ class App(customtkinter.CTk):
         text = text.encode()
         text = base64.b64encode(text)
         text = text.decode()
+        return text
 
     def downloadFile(self,ext):
         id = self.authors.get()
