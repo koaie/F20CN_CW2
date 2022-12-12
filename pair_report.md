@@ -84,11 +84,28 @@ Requirements are divided into requirements that are needed for the program to wo
 ### Environment
 <!-- describe the environment that you used to complete the tasks (e.g., what ma-
 chines, software and versions) -->
+The application is developed using Windows, Python 3.11.0, and gnupg version 1.4.9.
+Gnupg version 1.4.9 was chosen as it was the version tested by the developers of gnupg-python, which is a gnupg wrapper for python.
+Python 3.11.0 was chosen as it was the latest at the time of starting development.
+For the UI it was chosen to use the CustomTkinter library, as it's easy to use and have a modern look.
+
+
 ### Certificates
 <!-- List certificates -->
 <!-- cut-and-paste the command line with the responses, documenting the steps
 taken on each of the tasks above -->
 <!-- Justify how the certs were created and used -->
+#### GPG Keys
+##### Creating
+
+##### Exporting
+##### Signing 
+##### Verifying
+#### X509 Key
+##### Creating
+##### Root CA
+##### Signing
+##### Verifying
 ### Code Structure
 <!-- List source files and code along with a brief account of how it works -->
 
