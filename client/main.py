@@ -50,6 +50,10 @@ class App(customtkinter.CTk):
         self.list_keys_button.grid(row=2, column=0, padx=20, pady=10)
         self.command_button = customtkinter.CTkButton(self.sidebar_frame, text="Send Command", command=self.command_dialog)
         self.command_button.grid(row=3, column=0, padx=20, pady=10)
+        self.import_key_button = customtkinter.CTkButton(self.sidebar_frame, text="Import key", command=self.import_keys)
+        self.import_key_button.grid(row=5, column=0, padx=20, pady=10)
+
+
         self.keys_box = customtkinter.CTkTextbox(self)
         self.keys_box.configure(state="disabled")
         self.keys_box.grid(row=0, column=1, columnspan=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
@@ -93,6 +97,22 @@ class App(customtkinter.CTk):
                 key_string = key_file.read()
                 key_file.close()
                 client.add_keys(key_string)
+        except UnicodeDecodeError:
+            showwarning(title="Incorrect key file", message="Incorrect key file specified. Ensure key is exported "
+                                                            "with --armor")
+
+    def import_keys(self):
+        try:
+            initial = os.path.dirname(os.path.realpath(__file__))
+            key = filedialog.askopenfilename(
+                title="Open dataset",
+                initialdir=initial,
+                filetypes=[("Public/Private keys", "*.asc")])
+            if key:
+                key_file = open(key, "r")
+                key_string = key_file.read()
+                key_file.close()
+                client.pgp.add_key(key_string)
         except UnicodeDecodeError:
             showwarning(title="Incorrect key file", message="Incorrect key file specified. Ensure key is exported "
                                                             "with --armor")
