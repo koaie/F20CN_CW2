@@ -3,6 +3,9 @@ import pickle
 import base64
 import sys
 import os
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
 import time
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -22,6 +25,19 @@ class Server:
         print("starting server on port " + str(port))
         path = os.path.dirname(os.path.realpath(__file__)) + "\\bin"
         self.pgp = PGP(path)
+        private_key_file = open("certtest/my_private.key", "rb").read()
+        self.private_key = RSA.importKey(private_key_file)
+        self.signer = PKCS1_v1_5.new(self.private_key)
+        # TEMP
+        client_public_key_file = open("certtest/my_public.key", "rb").read()
+        client_public_key = RSA.importKey(client_public_key_file)
+        client_verifier = PKCS1_v1_5.new(client_public_key)
+
+        test_string = "Hello"
+        test_hashed = SHA256.new(data=bytes(test_string, "utf-8"))
+        signature = self.signer.sign(test_hashed)
+        print(client_verifier.verify(test_hashed, signature))
+
 
     def listen(self):
         self.s.listen(1)
@@ -82,8 +98,13 @@ class Server:
                 data = data.decode()
                 if data[:4] == "list":
                     # self.pgp.list()
-                    packet = self.listKeys()
-                    conn.send(packet.encode())
+                    keys = self.listKeys()
+                    test_hashed = SHA256.new(data=bytes(keys, "utf-8"))
+                    signature = self.signer.sign(test_hashed)
+                    packet = [keys, signature]
+                    packet_string = pickle.dumps(packet)
+                    packet_string = "list " + base64.b64encode(packet_string).decode('ascii')
+                    conn.send(packet_string.encode())
                 elif data[:4] == "sign":
                     cert = "pickle."
                     self.pgp.sign(cert)
