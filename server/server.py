@@ -59,10 +59,9 @@ class Server:
         size = os.path.getsize(path)
         path = os.path.abspath(path)
 
-        msg = "%d" % size
+        msg = "file %d" % size
         print("sending %s size %d" % (path,size))
-        packet = self.prepare_signature("file", msg)
-        conn.send(packet.encode())
+        conn.send(msg.encode())
 
         f = open(path, "rb")
         while True:
@@ -117,7 +116,7 @@ class Server:
                     res = self.addKeys(data)
                     conn.send(res.encode())
                 elif data[:4] == "file":
-                    path = "C:\\Users\\Koa\\Downloads\\Archive\\private.asc"
+                    path = "C:\\Users\\Oli\\Downloads\\private.asc"
                     self.sendFile(path,conn);
                 else:
                     error = "unexpected command %s" % (data)
