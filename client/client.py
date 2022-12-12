@@ -1,7 +1,9 @@
 import socket
 import pickle
 import base64
-import time
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
 
 
 class client:
@@ -13,6 +15,10 @@ class client:
         self.private = []
         self.ip = ip
         self.port = port
+        # Keys need moving obviously
+        public_key_file = open("../server/certtest/root.key", "rb").read()
+        self.public_key = RSA.importKey(public_key_file)
+        self.verifier = PKCS1_v1_5.new(self.public_key)
 
     def connect(self):
         self.s.connect((self.ip, self.port))
@@ -50,10 +56,15 @@ class client:
     def send(self, text: str):
         self.s.send(text.encode())
 
-        data = self.s.recv(10000)
+        data = self.s.recv(20000)
         if data:
             data = data.decode()
             if data[:4] == "list":
+                l = pickle.loads(base64.b64decode(data[5:]))
+                message = l[0]
+                signature = l[1]
+                message_hash = SHA256.new(data=bytes(message, "utf-8"))
+                print(self.verifier.verify(message_hash, signature))
                 keys = self.parseKeys(data)
                 self.list(keys["private"], keys["public"])
             else:
