@@ -5,7 +5,7 @@ import distutils.spawn
 
 
 class PGP:
-    def __init__(self,path=None, home=None):
+    def __init__(self,path:str =None, home: str=None):
         if home and path:
             self.gpg = self.initiate_gpg(path,home)
         elif home:

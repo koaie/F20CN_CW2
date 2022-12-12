@@ -1,8 +1,13 @@
 import socket
 import pickle
 import base64
-import time
+import sys
 import os
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+from pgp import PGP
+
 
 
 class client:
@@ -14,6 +19,9 @@ class client:
         self.private = []
         self.ip = ip
         self.port = port
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\bin"
+        home = path
+        self.pgp = PGP(path,home)
 
     def connect(self):
         self.s.connect((self.ip, self.port))
@@ -79,7 +87,7 @@ class client:
             elif data[:4] == "file":
                 data = data.split(" ")
                 if data[1]:
-                    path = "C:\\Users\\Koa\\Desktop\\grass.png"
+                    path = "C:\\Users\\Koa\\Desktop\\private.asc"
                     self.recvFile(path,data[1])
                 else:
                     error="usage: file <size>"

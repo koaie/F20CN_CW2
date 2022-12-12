@@ -93,7 +93,7 @@ class Server:
                     res = self.addKeys(data)
                     conn.send(res.encode())
                 elif data[:4] == "file":
-                    path = "C:\\Users\\Koa\\Downloads\\grass.png"
+                    path = "C:\\Users\\Koa\\Downloads\\Archive\\private.asc"
                     self.sendFile(path,conn);
                 else:
                     error = "unexpected command %s" % (data)
