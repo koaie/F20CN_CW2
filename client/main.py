@@ -71,7 +71,7 @@ class App(customtkinter.CTk):
         self.author_download_button.grid(row=2, column=3, pady=(20,10), padx=20, sticky="n")
         self.author_view_button = customtkinter.CTkButton(master=self.authors_frame, text="View items",command=self.view)
         self.author_view_button.grid(row=3, column=3, pady=10, padx=20, sticky="n")
-        self.author_verify_button = customtkinter.CTkButton(master=self.authors_frame, text="Verify File and Sig")
+        self.author_verify_button = customtkinter.CTkButton(master=self.authors_frame, text="Verify File and Sig",command=self.verify)
         self.author_verify_button.grid(row=4, column=3, pady=10, padx=20, sticky="n")
         self.author_sign_button = customtkinter.CTkButton(master=self.authors_frame, text="Sign Cert")
         self.author_sign_button.grid(row=5, column=3, pady=(10,20), padx=20, sticky="n")
@@ -185,14 +185,24 @@ class App(customtkinter.CTk):
             showinfo("Download Complete","Files have been downloaded successfully.")
         except:
             showerror("Error","An error has occurred.")
-
-
     
     def view(self):
         path = os.path.dirname(os.path.realpath(__file__)) + "\\files"
         if not os.path.isdir(path):
             os.makedirs(path)
         os.startfile(path) 
+
+    def verify(self):
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\files\\"
+        selected = self.authors.get()
+        selected = self.tob64(selected)
+        print(selected)
+        sig = os.path.join(path, selected + ".sig")
+        doc = os.path.join(path, selected + ".txt")
+
+        print(sig)
+        res = client.pgp.verifyFile(doc,sig)
+        print(res.username)
 
 
 

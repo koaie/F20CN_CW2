@@ -79,6 +79,12 @@ class PGP:
             res = self.gpg.verify_file(stream);
             print(res)
             return res
+
+    def verifyFile(self,path,sig):
+        with open(path, "rb") as f:
+                res = self.gpg.verify_file(f, sig)
+                return res
+
     
 
     def add_key(self, data):
