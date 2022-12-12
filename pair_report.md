@@ -49,7 +49,7 @@ Using MoSCoW, the requirements for this program are analysed and categorised, ba
 **Must Have:** Critical for the completion of the project.
 **Should Have:** Important, should be delivered but not critical for the success of the project.
 **Could Have:** Not important, should be delivered if there is extra time, not critical for the success of the project.
-**Wont Have:** Not needed in the current project.
+**Won't Have:** Not needed in the current project.
 
 Requirements are divided into requirements that are needed for the program to work (functional requirements) and non-function requirements, which limits how functional requirements should be implemented.
 
@@ -75,19 +75,16 @@ Requirements are divided into requirements that are needed for the program to wo
 |NFR-5| Should use unit testing to verify functional requirements | Should|
 
 ## Application
-<!-- what your pair did and what you produced -->
-<!-- how does the application achieve the project goal  -->
-### Usage
-<!-- how does our solution work? -->
+![Image](img/application.PNG)
 
 ## Design
 ### Environment
-<!-- describe the environment that you used to complete the tasks (e.g., what ma-
-chines, software and versions) -->
 The application is developed using Windows, Python 3.11.0, and gnupg version 1.4.9.
 Gnupg version 1.4.9 was chosen as it was the version tested by the developers of gnupg-python, which is a gnupg wrapper for python.
 Python 3.11.0 was chosen as it was the latest at the time of starting development.
 For the UI it was chosen to use the CustomTkinter library, as it's easy to use and have a modern look.
+We each used our own personal preference for code editors. Oli chose JetBrains PyCharm and Kate chose visual studio code.
+Both of these were chosen based on experience and familiarity and both worked well while working on this project.
 
 
 ### Certificates
@@ -97,28 +94,49 @@ taken on each of the tasks above -->
 <!-- Justify how the certs were created and used -->
 #### GPG Keys
 ##### Creating
-
+gpg --full-generate-key
 ##### Exporting
-##### Signing 
-##### Verifying
+gpg --export-secret-keys --armor > private.asc
+gpg --export-keys --armor > public.asc
 #### X509 Key
-##### Creating
-##### Root CA
+openssl genrsa -out key_private.key 4096
+openssl req -new -key key.key -out my.csr
+openssl x509 -in key.crt -pubkey -noout -out key_public_.key
 ##### Signing
+gpg --sign file.txt
 ##### Verifying
 ### Code Structure
-<!-- List source files and code along with a brief account of how it works -->
+pgp.py - Contains methods used to interface with the GPG binary
+#### Client
+client.py - Creates a socket connection to the server, receives data from the server and verifies it
+main.py - Contains the UI code and calls starts the socket connection defined in client.py
+#### Server
+server.py - Creates the server socket and contains functions for encoding and sending data back to the client
+main.py - Starts the server defined in server.py and manages client threads
 
 ## Afterthoughts
 ### Challenges
-<!-- document any difficulties that you
-met while doing any of the tasks -->
+One major challenge we had when developing this project was Kate's illness which slowed down development significantly.
+However, we were granted a Mitigating Circumstance meaning we could submit within 5 working days of the deadline.
+This was still challenging because it took us up to exam week however we still feel we managed to write a good
+application.
+There were also lots of competing deadlines which stopped us spending all our time on this project. This is something
+we probably should have anticipated and mitigated against. However, we did manage to finish almost everything we wanted 
+to
+We also struggled with libraries that were either outdated or had poor documentation. This made the planning stage of
+our application even more valuable because we didn't need to waste too much time trying to get these libraries to work.
 ### Observations
+One observation we had on this project was that it took us a lot longer than we expected. This wasn't helped by
+competing deadlines and the start of the exam period as mentioned above. The application ended up being more complex
+than we accounted for 
 <!-- Explain any observations that are interesting or surprising -->
 ### Reflection
-<!-- what would we do differently?
-what are the problems with the project? -->
+On reflection, we would have spent longer in the planning stage and created a time plan which would have allowed us to
+work around our other deadlines. Considering this and the Mitigating Circumstances of our project we were
+quite happy with the requirements we met. These can be seen below
 
 ## Conclusion
-
-
+We are quite happy with our finished client and server applications however we feel that with more time and less
+competing deadlines we would have produced a slightly more polished solution. In terms of our requirements, we
+successfully met requirements FR-1, FR-2, FR-3, FR-4, FR-5, FR-6 however we did not manage to complete FR-7. NFR-1, 
+NFR-2, NFR3 and NFR4 were all successfully completed however NFR-5 was incomplete.
