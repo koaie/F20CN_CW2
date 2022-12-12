@@ -2,6 +2,7 @@ import socket
 import pickle
 import base64
 import time
+import os
 
 
 class client:
@@ -47,6 +48,22 @@ class client:
     def get_keys(self):
         return self.private, self.public
 
+    def recvFile(self,path:str,size: int):
+        size = int(size)
+        path = os.path.abspath(path)
+        currentSize: int = 0
+        print("Received file, path: %s size: %d" % (path,size))
+
+        f = open(path,'wb') #open in binary
+        while True:
+            data = self.s.recv(1024)
+            if data:
+                f.write(data)
+                currentSize = os.fstat(f.fileno()).st_size
+            if (size-currentSize==0):
+                f.close()
+            break
+
     def send(self, text: str):
         self.s.send(text.encode())
 
@@ -56,5 +73,13 @@ class client:
             if data[:4] == "list":
                 keys = self.parseKeys(data)
                 self.list(keys["private"], keys["public"])
+            elif data[:4] == "file":
+                data = data.split(" ")
+                if data[1]:
+                    path = "C:\\Users\\Koa\\Desktop\\doc.txt"
+                    self.recvFile(path,data[1])
+                else:
+                    error="usage: file <size>"
+                    print(error)
             else:
                 print(data)
