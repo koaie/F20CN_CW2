@@ -49,20 +49,21 @@ class App(customtkinter.CTk):
         # self.authors_box.configure(state="disabled")
         # self.authors_box.grid(row=0, column=2, columnspan=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-                # create radiobutton frame
         self.authors_frame = customtkinter.CTkFrame(self)
-        self.authors_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
+        self.authors_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 20), sticky="n")
         self.authors = customtkinter.CTkComboBox(master=self.authors_frame,
                                                     values=["Oli", "Value 2", "Value Long....."])
         self.authors.grid(row=1, column=3, padx=20, pady=10)
         self.label_radio_group = customtkinter.CTkLabel(master=self.authors_frame, text="Trusted Authors")
         self.label_radio_group.grid(row=0, column=3, columnspan=1, padx=10, pady=10, sticky="")
-        self.radio_button_1 = customtkinter.CTkButton(master=self.authors_frame, text="Download File,Sig, Cert")
-        self.radio_button_1.grid(row=2, column=3, pady=10, padx=20, sticky="n")
-        self.radio_button_2 = customtkinter.CTkButton(master=self.authors_frame, text="Verify items")
-        self.radio_button_2.grid(row=3, column=3, pady=10, padx=20, sticky="n")
-        self.radio_button_3 = customtkinter.CTkButton(master=self.authors_frame, text="Sign")
-        self.radio_button_3.grid(row=4, column=3, pady=10, padx=20, sticky="n")
+        self.author_download_button = customtkinter.CTkButton(master=self.authors_frame, text="Download File,Sig, Cert")
+        self.author_download_button.grid(row=2, column=3, pady=(20,10), padx=20, sticky="n")
+        self.author_view_button = customtkinter.CTkButton(master=self.authors_frame, text="View items")
+        self.author_view_button.grid(row=3, column=3, pady=10, padx=20, sticky="n")
+        self.author_verify_button = customtkinter.CTkButton(master=self.authors_frame, text="Verify items")
+        self.author_verify_button.grid(row=4, column=3, pady=10, padx=20, sticky="n")
+        self.author_sign_button = customtkinter.CTkButton(master=self.authors_frame, text="Sign")
+        self.author_sign_button.grid(row=5, column=3, pady=(10,20), padx=20, sticky="n")
 
         self.load_keys()
         self.load_authors()
@@ -113,12 +114,6 @@ class App(customtkinter.CTk):
     def load_authors(self):
         print("")
         # client.send("authors")
-        # self.authors_box.configure(state="normal")
-        # self.authors_box.delete("0.0", "end")
-        # self.authors_box.insert("end", "Trusted Authors:\n", "heading")
-        # self.authors_box.insert("end", "Example Author\n", "key")
-        # self.authors_box.tag_config("heading", underline=True)
-        # self.authors_box.configure(state="disabled")
 
 
 if __name__ == "__main__":

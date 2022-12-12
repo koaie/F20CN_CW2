@@ -66,9 +66,9 @@ class client:
         size = int(size)
         path = os.path.abspath(path)
         currentSize: int = 0
-        print("Received file, path: %s size: %d" % (path,size))
 
-        f = open(path,'wb') #open in binary
+        f = open(path,'wb') # open in binary
+        print("Receiving file, path: %s size: %d" % (path,size))
         while True:
             if (size-currentSize==0):
                 f.close()
@@ -80,6 +80,7 @@ class client:
                 f.seek(0, os.SEEK_END)
                 currentSize = f.tell()
                 print("%d/%d" %(currentSize,size))
+        print("Received file, path: %s size: %d" % (path,size))
 
     def send(self, text: str):
         self.s.send(text.encode())
