@@ -65,7 +65,7 @@ class App(customtkinter.CTk):
         self.label_radio_group.grid(row=0, column=3, columnspan=1, padx=10, pady=10, sticky="")
         self.author_download_button = customtkinter.CTkButton(master=self.authors_frame, text="Download File and Sig", command=self.download)
         self.author_download_button.grid(row=2, column=3, pady=(20,10), padx=20, sticky="n")
-        self.author_view_button = customtkinter.CTkButton(master=self.authors_frame, text="View items")
+        self.author_view_button = customtkinter.CTkButton(master=self.authors_frame, text="View items",command=self.view)
         self.author_view_button.grid(row=3, column=3, pady=10, padx=20, sticky="n")
         self.author_verify_button = customtkinter.CTkButton(master=self.authors_frame, text="Verify File and Sig")
         self.author_verify_button.grid(row=4, column=3, pady=10, padx=20, sticky="n")
@@ -143,17 +143,29 @@ class App(customtkinter.CTk):
                     authors[id] = [Key("public",key["keyid"])]
         return authors.keys()
 
+    def tob64(self, text):
+        text = text.encode()
+        text = base64.b64encode(text)
+        text = text.decode()
+
     def downloadFile(self,ext):
         id = self.authors.get()
-        id = id.encode()
-        id = base64.b64encode(id)
-        msg = "file " + id.decode()+ext
+        id = self.tob64(id)
+        msg = "file " + id + ext
         print(msg)
         client.send(msg)
 
     def download(self):
         self.downloadFile(".txt")
         self.downloadFile(".sig")
+
+    
+    def view(self):
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\files"
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        os.startfile(path) 
+
 
 
 
