@@ -50,6 +50,7 @@ class Server:
         f = open(path, "rb")
         while True:
             data = f.read(1024)
+            
             if data:
                 conn.send(data)
             else:
@@ -92,7 +93,7 @@ class Server:
                     res = self.addKeys(data)
                     conn.send(res.encode())
                 elif data[:4] == "file":
-                    path = "C:\\Users\\Koa\\Downloads\\doc.txt"
+                    path = "C:\\Users\\Koa\\Downloads\\grass.png"
                     self.sendFile(path,conn);
                 else:
                     error = "unexpected command %s" % (data)

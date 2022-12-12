@@ -56,13 +56,16 @@ class client:
 
         f = open(path,'wb') #open in binary
         while True:
+            if (size-currentSize==0):
+                f.close()
+                break
+
             data = self.s.recv(1024)
             if data:
                 f.write(data)
-                currentSize = os.fstat(f.fileno()).st_size
-            if (size-currentSize==0):
-                f.close()
-            break
+                f.seek(0, os.SEEK_END)
+                currentSize = f.tell()
+                print("%d/%d" %(currentSize,size))
 
     def send(self, text: str):
         self.s.send(text.encode())
@@ -76,7 +79,7 @@ class client:
             elif data[:4] == "file":
                 data = data.split(" ")
                 if data[1]:
-                    path = "C:\\Users\\Koa\\Desktop\\doc.txt"
+                    path = "C:\\Users\\Koa\\Desktop\\grass.png"
                     self.recvFile(path,data[1])
                 else:
                     error="usage: file <size>"
