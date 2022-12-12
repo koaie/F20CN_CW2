@@ -1,11 +1,12 @@
 import tkinter
-from tkinter.messagebox import showerror, showwarning
+from tkinter.messagebox import showerror, showwarning,showinfo
 from tkinter import filedialog
 import os
 import customtkinter
 import sys
 import client
 import datetime
+import base64
 
 try:
     client = client.client("127.0.0.1", 8888)
@@ -16,6 +17,13 @@ except ConnectionError:
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
+class Key:
+    type: str
+    key: str
+    def __init__(self, type, key):
+        self.type = type
+        self.key = key
 
 
 class App(customtkinter.CTk):
@@ -42,6 +50,10 @@ class App(customtkinter.CTk):
         self.list_keys_button.grid(row=2, column=0, padx=20, pady=10)
         self.command_button = customtkinter.CTkButton(self.sidebar_frame, text="Send Command", command=self.command_dialog)
         self.command_button.grid(row=3, column=0, padx=20, pady=10)
+        self.import_key_button = customtkinter.CTkButton(self.sidebar_frame, text="Import key", command=self.import_keys)
+        self.import_key_button.grid(row=5, column=0, padx=20, pady=10)
+
+
         self.keys_box = customtkinter.CTkTextbox(self)
         self.keys_box.configure(state="disabled")
         self.keys_box.grid(row=0, column=1, columnspan=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
@@ -51,18 +63,17 @@ class App(customtkinter.CTk):
 
         self.authors_frame = customtkinter.CTkFrame(self)
         self.authors_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 20), sticky="n")
-        self.authors = customtkinter.CTkComboBox(master=self.authors_frame,
-                                                    values=["Oli", "Value 2", "Value Long....."])
+        self.authors = customtkinter.CTkComboBox(master=self.authors_frame, values=list(self.load_authors()))
         self.authors.grid(row=1, column=3, padx=20, pady=10)
         self.label_radio_group = customtkinter.CTkLabel(master=self.authors_frame, text="Trusted Authors")
         self.label_radio_group.grid(row=0, column=3, columnspan=1, padx=10, pady=10, sticky="")
-        self.author_download_button = customtkinter.CTkButton(master=self.authors_frame, text="Download File,Sig, Cert")
+        self.author_download_button = customtkinter.CTkButton(master=self.authors_frame, text="Download File and Sig", command=self.download)
         self.author_download_button.grid(row=2, column=3, pady=(20,10), padx=20, sticky="n")
-        self.author_view_button = customtkinter.CTkButton(master=self.authors_frame, text="View items")
+        self.author_view_button = customtkinter.CTkButton(master=self.authors_frame, text="View items",command=self.view)
         self.author_view_button.grid(row=3, column=3, pady=10, padx=20, sticky="n")
-        self.author_verify_button = customtkinter.CTkButton(master=self.authors_frame, text="Verify items")
+        self.author_verify_button = customtkinter.CTkButton(master=self.authors_frame, text="Verify File and Sig",command=self.verify)
         self.author_verify_button.grid(row=4, column=3, pady=10, padx=20, sticky="n")
-        self.author_sign_button = customtkinter.CTkButton(master=self.authors_frame, text="Sign")
+        self.author_sign_button = customtkinter.CTkButton(master=self.authors_frame, text="Sign Cert")
         self.author_sign_button.grid(row=5, column=3, pady=(10,20), padx=20, sticky="n")
 
         self.load_keys()
@@ -89,6 +100,24 @@ class App(customtkinter.CTk):
         except UnicodeDecodeError:
             showwarning(title="Incorrect key file", message="Incorrect key file specified. Ensure key is exported "
                                                             "with --armor")
+
+    def import_keys(self):
+        try:
+            initial = os.path.dirname(os.path.realpath(__file__))
+            key = filedialog.askopenfilename(
+                title="Open dataset",
+                initialdir=initial,
+                filetypes=[("Public/Private keys", "*.asc")])
+            if key:
+                key_file = open(key, "r")
+                key_string = key_file.read()
+                key_file.close()
+                client.pgp.add_key(key_string)
+                showinfo("Import Complete","Keys have been imported successfully.")
+        except UnicodeDecodeError:
+            showwarning(title="Incorrect key file", message="Incorrect key file specified. Ensure key is exported "
+                                                            "with --armor")
+
     def load_keys(self):
         client.send("list")
         private, public = client.get_keys()
@@ -97,7 +126,7 @@ class App(customtkinter.CTk):
         self.keys_box.insert("end", "Private keys:\n", "heading")
         for key in private:
             if key["expires"]:
-                self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: " +
+                self.keys_box.insert("end", "key id: " + key["keyid"] + " uid: " + str(key["uids"]) + ", expires: " +
                                      str(datetime.datetime.fromtimestamp(int(key["expires"]))) + "\n", "key")
             else:
                 self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: N/A\n", "key")
@@ -111,10 +140,74 @@ class App(customtkinter.CTk):
         self.keys_box.tag_config("heading", underline=True)
         self.keys_box.configure(state="disabled")
 
-    def load_authors(self):
-        print("")
-        # client.send("authors")
 
+    def load_authors(self):
+        client.send("list")
+        private, public = client.get_keys()
+        authors = {
+
+        }
+        for key in private:
+            for id in key["uids"]:
+                if id in authors:
+                    keys: list = authors[id]
+                    keys.append(Key("private",key["keyid"]))
+                    authors[id] = keys
+                else:
+                    authors[id] = [Key("private",key["keyid"])]
+        for key in public:
+            for id in key["uids"]:
+                if id in authors:
+                    keys: list = authors[id]
+                    keys.append(Key("public",key["keyid"]))
+                    authors[id] = keys
+                else:
+                    authors[id] = [Key("public",key["keyid"])]
+        return authors.keys()
+
+    def tob64(self, text):
+        text = text.encode()
+        text = base64.b64encode(text)
+        text = text.decode()
+        return text
+
+    def downloadFile(self,ext):
+        id = self.authors.get()
+        id = self.tob64(id)
+        msg = "file " + id + ext
+        print(msg)
+        client.send(msg)
+
+    def download(self):
+        try:
+            self.downloadFile(".txt")
+            self.downloadFile(".sig")
+            showinfo("Download Complete","Files have been downloaded successfully.")
+        except:
+            showerror("Error","An error has occurred.")
+    
+    def view(self):
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\files"
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        os.startfile(path) 
+
+    def verify(self):
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\files\\"
+        selected = self.authors.get()
+        selected = self.tob64(selected)
+        print(selected)
+        sig = os.path.join(path, selected + ".sig")
+        doc = os.path.join(path, selected + ".txt")
+
+        print(sig)
+        res = client.pgp.verifyFile(doc,sig)
+        print(res.username)
+
+
+
+
+               
 
 if __name__ == "__main__":
     app = App()

@@ -6,7 +6,7 @@ import os
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
-import time
+
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
@@ -55,12 +55,12 @@ class Server:
         packet = "list private %s endprivate public %s endpublic" % (private, public)
         return packet
 
-    def sendFile(self,path:str,conn: socket):
+    def sendFile(self,path:str,id: str,conn: socket):
         size = os.path.getsize(path)
         path = os.path.abspath(path)
 
-        msg = "file %d" % size
-        print("sending %s size %d" % (path,size))
+        msg = "file %d %s" % (size,id)
+        print("sending %s size %d name %s" % (path,size,id))
         conn.send(msg.encode())
 
         f = open(path, "rb")
@@ -116,8 +116,15 @@ class Server:
                     res = self.addKeys(data)
                     conn.send(res.encode())
                 elif data[:4] == "file":
-                    path = "C:\\Users\\Oli\\Downloads\\private.asc"
-                    self.sendFile(path,conn);
+                    data = data.split(" ")
+                    if data[1]:
+                        path = os.path.dirname(os.path.realpath(__file__)) + "\\files\\"
+                        path = path + data[1]
+                        self.sendFile(path,data[1],conn);
+                    else:
+                        error = "usage: file <uid>"
+                        print(error)
+                        conn.send(error.encode())
                 else:
                     error = "unexpected command %s" % (data)
                     print(error)
