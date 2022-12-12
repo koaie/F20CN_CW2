@@ -36,6 +36,7 @@ class client:
         self.s.close()
 
     def parseKeys(self, data):
+        print(data)
         private_start = data.find("private") + len("private") + 1
         private_end = data.find("endprivate")
         public_start = data.find("public") + len("public") + 1
@@ -91,23 +92,23 @@ class client:
 
     def send(self, text: str):
         self.s.send(text.encode())
-        data = self.s.recv(10000)
+        data = self.s.recv(20000)
         if data:
             data = data.decode()
-            # data = self.verify(data)
+            data = self.verify(data)
             # Handle unverified
             # command = data[0]
             # message = data[1]
             # signature = data[2]
-            if data[:4] == "list":
+            if data[0] == "list":
                 keys = self.parseKeys(data[1])
                 self.list(keys["private"], keys["public"])
-            elif data[:4] == "file":
-                # This will need some changing now data is an list
-                data = data.split(" ")
+            elif data[0] == "file":
+                # This will need some changing now data is a list
+                data = data[1].split(" ")
                 if data[1]:
                     path = "C:\\Users\\Koa\\Desktop\\private.asc"
-                    self.recvFile(path,data[1])
+                    self.recvFile(path, data[1])
                 else:
                     error="usage: file <size>"
                     print(error)
