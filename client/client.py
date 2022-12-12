@@ -16,7 +16,7 @@ class client:
         self.ip = ip
         self.port = port
         # Keys need moving obviously
-        public_key_file = open("../server/certtest/root.key", "rb").read()
+        public_key_file = open("../server/certtest/my_public.key", "rb").read()
         self.public_key = RSA.importKey(public_key_file)
         self.verifier = PKCS1_v1_5.new(self.public_key)
 
@@ -65,7 +65,7 @@ class client:
                 signature = l[1]
                 message_hash = SHA256.new(data=bytes(message, "utf-8"))
                 print(self.verifier.verify(message_hash, signature))
-                keys = self.parseKeys(data)
+                keys = self.parseKeys(message)
                 self.list(keys["private"], keys["public"])
             else:
                 print(data)

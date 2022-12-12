@@ -24,11 +24,11 @@ class Server:
         print("starting server on port " + str(port))
         path = os.path.dirname(os.path.realpath(__file__)) + "\\bin"
         self.pgp = PGP(path)
-        private_key_file = open("certtest/server.key", "rb").read()
+        private_key_file = open("certtest/my_private.key", "rb").read()
         self.private_key = RSA.importKey(private_key_file)
         self.signer = PKCS1_v1_5.new(self.private_key)
         # TEMP
-        client_public_key_file = open("certtest/root.key", "rb").read()
+        client_public_key_file = open("certtest/my_public.key", "rb").read()
         client_public_key = RSA.importKey(client_public_key_file)
         client_verifier = PKCS1_v1_5.new(client_public_key)
 
