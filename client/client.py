@@ -4,6 +4,12 @@ import base64
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
+import sys
+import os
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+from pgp import PGP
 
 
 class client:
@@ -19,6 +25,9 @@ class client:
         public_key_file = open("../server/certtest/my_public.key", "rb").read()
         self.public_key = RSA.importKey(public_key_file)
         self.verifier = PKCS1_v1_5.new(self.public_key)
+        path = os.path.dirname(os.path.realpath(__file__)) + "\\bin"
+        home = path
+        self.pgp = PGP(path,home)
 
     def connect(self):
         self.s.connect((self.ip, self.port))
@@ -53,6 +62,25 @@ class client:
     def get_keys(self):
         return self.private, self.public
 
+    def recvFile(self,path:str,size: int):
+        size = int(size)
+        path = os.path.abspath(path)
+        currentSize: int = 0
+        print("Received file, path: %s size: %d" % (path,size))
+
+        f = open(path,'wb') #open in binary
+        while True:
+            if (size-currentSize==0):
+                f.close()
+                break
+
+            data = self.s.recv(1024)
+            if data:
+                f.write(data)
+                f.seek(0, os.SEEK_END)
+                currentSize = f.tell()
+                print("%d/%d" %(currentSize,size))
+
     def send(self, text: str):
         self.s.send(text.encode())
 
@@ -67,5 +95,13 @@ class client:
                 print(self.verifier.verify(message_hash, signature))
                 keys = self.parseKeys(message)
                 self.list(keys["private"], keys["public"])
+            elif data[:4] == "file":
+                data = data.split(" ")
+                if data[1]:
+                    path = "C:\\Users\\Koa\\Desktop\\private.asc"
+                    self.recvFile(path,data[1])
+                else:
+                    error="usage: file <size>"
+                    print(error)
             else:
                 print(data)

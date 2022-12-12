@@ -6,6 +6,7 @@ import os
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
+import time
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
@@ -54,6 +55,25 @@ class Server:
         packet = "list private %s endprivate public %s endpublic" % (private, public)
         return packet
 
+    def sendFile(self,path:str,conn: socket):
+        size = os.path.getsize(path)
+        path = os.path.abspath(path)
+
+        msg = "file %d" % size
+        print("sending %s size %d" % (path,size))
+        conn.send(msg.encode())
+
+        f = open(path, "rb")
+        while True:
+            data = f.read(1024)
+            
+            if data:
+                conn.send(data)
+            else:
+                f.close()
+                break
+
+
     def addKeys(self, data):
         try:
             if "PUBLIC" in data:
@@ -93,9 +113,12 @@ class Server:
                 elif data[:3] == "add":
                     res = self.addKeys(data)
                     conn.send(res.encode())
+                elif data[:4] == "file":
+                    path = "C:\\Users\\Koa\\Downloads\\Archive\\private.asc"
+                    self.sendFile(path,conn);
                 else:
-                    error = "unexpected command"
-                    print("%s %s" % (error, data))
+                    error = "unexpected command %s" % (data)
+                    print(error)
                     conn.send(error.encode())
             else:
                 print("Client quit, closing", addr)

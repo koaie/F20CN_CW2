@@ -5,7 +5,7 @@ import distutils.spawn
 
 
 class PGP:
-    def __init__(self,path=None, home=None):
+    def __init__(self,path:str =None, home: str=None):
         if home and path:
             self.gpg = self.initiate_gpg(path,home)
         elif home:
@@ -38,6 +38,13 @@ class PGP:
         response = self.gpg.sign(cert)
         print(response)
         return response
+    
+    def signFile(self,path:str, output:str):
+        path = os.path.abspath(path)
+        with open(path, "rb") as stream:
+            signed = self.gpg.sign_file(stream, output);
+            print(signed)
+            return signed
 
     def list_public_keys(self):
         return self.gpg.list_keys()
@@ -63,8 +70,16 @@ class PGP:
                 print("| private | %s |" % key["keyid"])
                 print("|----------------------------|")
 
-    def verify(self):
-        print("unimplemented")
+    def verify(self, data):
+        return self.gpg.verify(data)
+
+    def verifyFile(self,path:str):
+        path = os.path.abspath(path)
+        with open(path, "rb") as stream:
+            res = self.gpg.verify_file(stream);
+            print(res)
+            return res
+    
 
     def add_key(self, data):
         # temp
