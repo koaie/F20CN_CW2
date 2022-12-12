@@ -6,6 +6,7 @@ import customtkinter
 import sys
 import client
 import datetime
+import base64
 
 try:
     client = client.client("127.0.0.1", 8888)
@@ -16,6 +17,13 @@ except ConnectionError:
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
+class Key:
+    type: str
+    key: str
+    def __init__(self, type, key):
+        self.type = type
+        self.key = key
 
 
 class App(customtkinter.CTk):
@@ -51,12 +59,11 @@ class App(customtkinter.CTk):
 
         self.authors_frame = customtkinter.CTkFrame(self)
         self.authors_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 20), sticky="n")
-        self.authors = customtkinter.CTkComboBox(master=self.authors_frame,
-                                                    values=["Oli", "Value 2", "Value Long....."])
+        self.authors = customtkinter.CTkComboBox(master=self.authors_frame, values=list(self.load_authors()))
         self.authors.grid(row=1, column=3, padx=20, pady=10)
         self.label_radio_group = customtkinter.CTkLabel(master=self.authors_frame, text="Trusted Authors")
         self.label_radio_group.grid(row=0, column=3, columnspan=1, padx=10, pady=10, sticky="")
-        self.author_download_button = customtkinter.CTkButton(master=self.authors_frame, text="Download File,Sig, Cert")
+        self.author_download_button = customtkinter.CTkButton(master=self.authors_frame, text="Download File,Sig, Cert", command=self.download)
         self.author_download_button.grid(row=2, column=3, pady=(20,10), padx=20, sticky="n")
         self.author_view_button = customtkinter.CTkButton(master=self.authors_frame, text="View items")
         self.author_view_button.grid(row=3, column=3, pady=10, padx=20, sticky="n")
@@ -97,7 +104,7 @@ class App(customtkinter.CTk):
         self.keys_box.insert("end", "Private keys:\n", "heading")
         for key in private:
             if key["expires"]:
-                self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: " +
+                self.keys_box.insert("end", "key id: " + key["keyid"] + " uid: " + str(key["uids"]) + ", expires: " +
                                      str(datetime.datetime.fromtimestamp(int(key["expires"]))) + "\n", "key")
             else:
                 self.keys_box.insert("end", "key id: " + key["keyid"] + ", expires: N/A\n", "key")
@@ -111,10 +118,41 @@ class App(customtkinter.CTk):
         self.keys_box.tag_config("heading", underline=True)
         self.keys_box.configure(state="disabled")
 
-    def load_authors(self):
-        print("")
-        # client.send("authors")
 
+    def load_authors(self):
+        client.send("list")
+        private, public = client.get_keys()
+        authors = {
+
+        }
+        for key in private:
+            for id in key["uids"]:
+                if id in authors:
+                    keys: list = authors[id]
+                    keys.append(Key("private",key["keyid"]))
+                    authors[id] = keys
+                else:
+                    authors[id] = [Key("private",key["keyid"])]
+        for key in public:
+            for id in key["uids"]:
+                if id in authors:
+                    keys: list = authors[id]
+                    keys.append(Key("public",key["keyid"]))
+                    authors[id] = keys
+                else:
+                    authors[id] = [Key("public",key["keyid"])]
+        return authors.keys()
+
+    def download(self):
+        id = self.authors.get()
+        id = id.encode()
+        id = base64.b64encode(id)
+        msg = "file " + id.decode()
+        print("file " + id.decode())
+        client.send(msg)
+
+
+               
 
 if __name__ == "__main__":
     app = App()

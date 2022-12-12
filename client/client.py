@@ -23,7 +23,7 @@ class client:
         self.ip = ip
         self.port = port
         # Keys need moving obviously
-        public_key_file = open("../server/certtest/my_public.key", "rb").read()
+        public_key_file = open(os.path.dirname(os.path.realpath(__file__)) + "\\bin\\my_public.key", "rb").read()
         self.public_key = RSA.importKey(public_key_file)
         self.verifier = PKCS1_v1_5.new(self.public_key)
         path = os.path.dirname(os.path.realpath(__file__)) + "\\bin"
@@ -99,11 +99,12 @@ class client:
             data = data.decode()
             if "file" in data:
                 data = data.split(" ")
-                if data[1]:
-                    path = "C:\\Users\\Oli\\Desktop\\private.asc"
+                if data[1] and data[2]:
+                    path = os.path.dirname(os.path.realpath(__file__)) + "\\docs\\"
+                    path = path + data[2] + ".txt"
                     self.recvFile(path, data[1])
                 else:
-                    error = "usage: file <size>"
+                    error = "usage: file <size> <uid: base64>"
                     print(error)
             else:
                 data = self.verify(data)
