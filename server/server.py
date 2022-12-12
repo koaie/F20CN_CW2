@@ -29,14 +29,14 @@ class Server:
         self.private_key = RSA.importKey(private_key_file)
         self.signer = PKCS1_v1_5.new(self.private_key)
         # TEMP
-        client_public_key_file = open("certtest/my_public.key", "rb").read()
-        client_public_key = RSA.importKey(client_public_key_file)
-        client_verifier = PKCS1_v1_5.new(client_public_key)
-
-        test_string = "Hello"
-        test_hashed = SHA256.new(data=bytes(test_string, "utf-8"))
-        signature = self.signer.sign(test_hashed)
-        print(client_verifier.verify(test_hashed, signature))
+        # client_public_key_file = open("certtest/my_public.key", "rb").read()
+        # client_public_key = RSA.importKey(client_public_key_file)
+        # client_verifier = PKCS1_v1_5.new(client_public_key)
+        #
+        # test_string = "Hello"
+        # test_hashed = SHA256.new(data=bytes(test_string, "utf-8"))
+        # signature = self.signer.sign(test_hashed)
+        # print(client_verifier.verify(test_hashed, signature))
 
 
     def listen(self):
@@ -90,6 +90,13 @@ class Server:
         except EOFError:
             return "Incorrect input"
 
+    def prepare_signature(self, command, data):
+        data_hashed = SHA256.new(data=bytes(data, "utf-8"))
+        signature = self.signer.sign(data_hashed)
+        packet = [command, data, signature]
+        packet_string = pickle.dumps(packet)
+        packet_string = base64.b64encode(packet_string).decode('ascii')
+        return packet_string
 
     def connection(self, conn: socket, addr):
         while True:
@@ -97,13 +104,8 @@ class Server:
             if data:
                 data = data.decode()
                 if data[:4] == "list":
-                    # self.pgp.list()
                     keys = self.listKeys()
-                    test_hashed = SHA256.new(data=bytes(keys, "utf-8"))
-                    signature = self.signer.sign(test_hashed)
-                    packet = [keys, signature]
-                    packet_string = pickle.dumps(packet)
-                    packet_string = "list " + base64.b64encode(packet_string).decode('ascii')
+                    packet_string = self.prepare_signature("list", keys)
                     conn.send(packet_string.encode())
                 elif data[:4] == "sign":
                     cert = "pickle."

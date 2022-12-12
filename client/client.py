@@ -81,23 +81,30 @@ class client:
                 currentSize = f.tell()
                 print("%d/%d" %(currentSize,size))
 
+    def verify(self, data):
+        data = pickle.loads(base64.b64decode(data))
+        message_hash = SHA256.new(data=bytes(data[1], "utf-8"))
+        result = self.verifier.verify(message_hash, data[2])
+        if result:
+            return data
+
     def send(self, text: str):
         self.s.send(text.encode())
-
         data = self.s.recv(20000)
         if data:
             data = data.decode()
-            if data[:4] == "list":
-                l = pickle.loads(base64.b64decode(data[5:]))
-                message = l[0]
-                signature = l[1]
-                message_hash = SHA256.new(data=bytes(message, "utf-8"))
-                print(self.verifier.verify(message_hash, signature))
-                keys = self.parseKeys(message)
+            data = self.verify(data)
+            # Handle unverified
+            # command = data[0]
+            # message = data[1]
+            # signature = data[2]
+            if data[0] == "list":
+                keys = self.parseKeys(data[1])
                 self.list(keys["private"], keys["public"])
-            elif data[:4] == "file":
+            elif data[0] == "file":
+                # This will need some changing now data is an list
                 data = data.split(" ")
-                if data[1]:
+                if data[0]:
                     path = "C:\\Users\\Koa\\Desktop\\private.asc"
                     self.recvFile(path,data[1])
                 else:
