@@ -1,5 +1,5 @@
 import tkinter
-from tkinter.messagebox import showerror, showwarning
+from tkinter.messagebox import showerror, showwarning,showinfo
 from tkinter import filedialog
 import os
 import customtkinter
@@ -113,9 +113,11 @@ class App(customtkinter.CTk):
                 key_string = key_file.read()
                 key_file.close()
                 client.pgp.add_key(key_string)
+                showinfo("Import Complete","Keys have been imported successfully.")
         except UnicodeDecodeError:
             showwarning(title="Incorrect key file", message="Incorrect key file specified. Ensure key is exported "
                                                             "with --armor")
+
     def load_keys(self):
         client.send("list")
         private, public = client.get_keys()
@@ -177,8 +179,13 @@ class App(customtkinter.CTk):
         client.send(msg)
 
     def download(self):
-        self.downloadFile(".txt")
-        self.downloadFile(".sig")
+        try:
+            self.downloadFile(".txt")
+            self.downloadFile(".sig")
+            showinfo("Download Complete","Files have been downloaded successfully.")
+        except:
+            showerror("Error","An error has occurred.")
+
 
     
     def view(self):
