@@ -59,9 +59,10 @@ class Server:
         size = os.path.getsize(path)
         path = os.path.abspath(path)
 
-        msg = "file %d" % size
+        msg = "%d" % size
         print("sending %s size %d" % (path,size))
-        conn.send(msg.encode())
+        packet = self.prepare_signature("file", msg)
+        conn.send(packet.encode())
 
         f = open(path, "rb")
         while True:
