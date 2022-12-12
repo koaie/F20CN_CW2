@@ -118,8 +118,8 @@ class Server:
                 elif data[:4] == "file":
                     data = data.split(" ")
                     if data[1]:
-                        path = os.path.dirname(os.path.realpath(__file__)) + "\\docs\\"
-                        path = path + data[1] + ".txt"
+                        path = os.path.dirname(os.path.realpath(__file__)) + "\\files\\"
+                        path = path + data[1]
                         self.sendFile(path,data[1],conn);
                     else:
                         error = "usage: file <uid>"

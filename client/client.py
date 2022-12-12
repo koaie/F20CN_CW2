@@ -100,11 +100,13 @@ class client:
             if "file" in data:
                 data = data.split(" ")
                 if data[1] and data[2]:
-                    path = os.path.dirname(os.path.realpath(__file__)) + "\\docs\\"
-                    path = path + data[2] + ".txt"
+                    path = os.path.dirname(os.path.realpath(__file__)) + "\\files"
+                    if not os.path.isdir(path):
+                        os.makedirs(path)
+                    path = path + "\\" + data[2]
                     self.recvFile(path, data[1])
                 else:
-                    error = "usage: file <size> <uid: base64>"
+                    error = "usage: file <size> <uid: base64>.[txt/sig/asc]"
                     print(error)
             else:
                 data = self.verify(data)
